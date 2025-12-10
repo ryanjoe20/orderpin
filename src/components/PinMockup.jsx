@@ -174,6 +174,24 @@ const PinMockup = ({ imageFile, sizeId, onTransformChange }) => {
 
     const handleMouseUp = () => setIsDragging(false);
 
+    // --- Touch Handlers (Mobile) ---
+    const handleTouchStart = (e) => {
+        if (e.touches.length === 1) {
+            setIsDragging(true);
+            setLastPos({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+        }
+    };
+
+    const handleTouchMove = (e) => {
+        if (!isDragging || e.touches.length !== 1) return;
+        const deltaX = e.touches[0].clientX - lastPos.x;
+        const deltaY = e.touches[0].clientY - lastPos.y;
+        setTransform(prev => ({ ...prev, x: prev.x + deltaX, y: prev.y + deltaY }));
+        setLastPos({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+    };
+
+    const handleTouchEnd = () => setIsDragging(false);
+
     return (
         <div className="flex flex-col items-center justify-center p-4 bg-white rounded-2xl shadow-sm border border-gray-100 select-none">
             <canvas
@@ -181,11 +199,15 @@ const PinMockup = ({ imageFile, sizeId, onTransformChange }) => {
                 width={400}
                 height={400}
                 className={`max-w-full h-auto drop-shadow-xl cursor-move ${!imageFile ? 'cursor-default' : ''}`}
+                style={{ touchAction: 'none' }} // Prevent scrolling while dragging
                 onWheel={imageFile ? handleWheel : undefined}
                 onMouseDown={imageFile ? handleMouseDown : undefined}
                 onMouseMove={imageFile ? handleMouseMove : undefined}
                 onMouseUp={imageFile ? handleMouseUp : undefined}
                 onMouseLeave={imageFile ? handleMouseUp : undefined}
+                onTouchStart={imageFile ? handleTouchStart : undefined}
+                onTouchMove={imageFile ? handleTouchMove : undefined}
+                onTouchEnd={imageFile ? handleTouchEnd : undefined}
             />
 
             {imageFile && (
