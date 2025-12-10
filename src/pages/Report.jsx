@@ -66,6 +66,17 @@ const Report = () => {
                     <Link to="/admin" className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600">
                         <ArrowLeft size={24} />
                     </Link>
+                    <button
+                        onClick={() => {
+                            if (confirm('Yakin ingin keluar?')) {
+                                localStorage.removeItem('admin_auth');
+                                window.location.reload();
+                            }
+                        }}
+                        className="text-xs text-red-500 hover:text-red-700 font-medium"
+                    >
+                        Logout
+                    </button>
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Laporan Penjualan</h1>
                         <p className="text-gray-500">Rekap data pesanan yang sudah diproses.</p>

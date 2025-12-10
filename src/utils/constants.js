@@ -4,7 +4,7 @@ export const PIN_SIZES = {
         label: 'Kecil',
         outerDiameterCm: 5.5,
         innerDiameterCm: 4.4,
-        price: 6000, // Example price
+        price: 5000, // Example price
         description: 'Pin ukuran standar (5.5cm)',
     },
     large: {
@@ -12,7 +12,7 @@ export const PIN_SIZES = {
         label: 'Besar',
         outerDiameterCm: 6.95,
         innerDiameterCm: 5.8,
-        price: 7000, // Example price
+        price: 8000, // Example price
         description: 'Pin ukuran besar (6.95cm)',
     },
 };

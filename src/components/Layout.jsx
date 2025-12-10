@@ -64,7 +64,17 @@ const Layout = ({ children }) => {
             </main>
 
             <footer className="bg-white border-t border-gray-200 py-8 text-center text-sm text-gray-500">
-                <p>&copy; {new Date().getFullYear()} Pin order by 20ryannugraha</p>
+                <p>
+                    &copy; {new Date().getFullYear()} Pin order by{' '}
+                    <a
+                        href="https://instagram.com/20ryannugraha"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline"
+                    >
+                        20ryannugraha
+                    </a>
+                </p>
             </footer>
         </div>
     );

@@ -162,6 +162,17 @@ const Admin = () => {
                     </Link>
                     <button
                         onClick={() => {
+                            if (confirm('Yakin ingin keluar?')) {
+                                localStorage.removeItem('admin_auth');
+                                window.location.reload();
+                            }
+                        }}
+                        className="text-xs text-gray-500 hover:text-gray-800 font-medium"
+                    >
+                        Kelluar
+                    </button>
+                    <button
+                        onClick={() => {
                             if (confirm('Hapus semua data pesanan?')) {
                                 clearOrders();
                             }

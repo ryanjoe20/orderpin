@@ -4,14 +4,24 @@ import Home from './pages/Home';
 import Admin from './pages/Admin';
 import Report from './pages/Report';
 
+import ProtectedRoute from './components/ProtectedRoute';
+
 function App() {
   return (
     <Router>
       <Layout>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/report" element={<Report />} />
+          <Route path="/admin" element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          } />
+          <Route path="/report" element={
+            <ProtectedRoute>
+              <Report />
+            </ProtectedRoute>
+          } />
         </Routes>
       </Layout>
     </Router>
