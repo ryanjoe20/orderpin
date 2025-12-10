@@ -1,0 +1,18 @@
+export const PIN_SIZES = {
+    small: {
+        id: 'small',
+        label: 'Kecil',
+        outerDiameterCm: 5.5,
+        innerDiameterCm: 4.4,
+        price: 6000, // Example price
+        description: 'Pin ukuran standar (5.5cm)',
+    },
+    large: {
+        id: 'large',
+        label: 'Besar',
+        outerDiameterCm: 6.95,
+        innerDiameterCm: 5.8,
+        price: 7000, // Example price
+        description: 'Pin ukuran besar (6.95cm)',
+    },
+};
