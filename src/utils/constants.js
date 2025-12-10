@@ -16,3 +16,16 @@ export const PIN_SIZES = {
         description: 'Pin ukuran besar (6.95cm)',
     },
 };
+
+export const PRODUCT_TYPES = {
+    pin: {
+        id: 'pin',
+        label: 'Pin Peniti',
+        code: 'PIN'
+    },
+    keychain: {
+        id: 'keychain',
+        label: 'Gantungan Kunci',
+        code: 'GANCI'
+    }
+};

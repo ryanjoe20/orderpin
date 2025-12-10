@@ -67,6 +67,11 @@ const Admin = () => {
 
         const canvas = document.createElement('canvas');
         const sizeConfig = order.sizeDetails;
+        if (!sizeConfig) {
+            alert("Data ukuran tidak ditemukan untuk pesanan ini. Mohon reset data.");
+            return;
+        }
+        const productType = order.productType === 'keychain' ? 'GANCI' : 'PIN'; // Default PIN
 
         // Create high-res canvas at 300 DPI for print readiness
         // Formula: pixels = (cm / 2.54) * DPI
@@ -84,10 +89,15 @@ const Admin = () => {
         const img = new Image();
         img.src = order.imageData;
         img.onload = () => {
+            // ... drawing logic reuse ... 
+            // To save tokens, I will assume the drawing logic is constant unless I need to change it.
+            // Wait, I am replacing the whole function block or just part?
+            // Since I need to change the filename at the end, I need the context.
+            // I'll rewrite the critical parts.
+
             const centerX = width / 2;
             const centerY = height / 2;
-            const outerRadius = width / 2; // Full canvas is the cut line
-            // Face radius relative to outer
+            const outerRadius = width / 2;
             const innerRadius = outerRadius * (sizeConfig.innerDiameterCm / sizeConfig.outerDiameterCm);
 
             // 1. Draw Bleed/Cut Line
@@ -97,42 +107,28 @@ const Admin = () => {
 
             // 2. Draw Image with Transform
             const t = order.imageTransform || { scale: 1, x: 0, y: 0 };
-
-            // Mockup canvas was fixed at 400px width
             const MOCKUP_BASE_SIZE = 400;
             const ratio = width / MOCKUP_BASE_SIZE;
-
             const baseScale = Math.max((outerRadius * 2) / img.width, (outerRadius * 2) / img.height);
             const finalScale = baseScale * t.scale;
-
             const imgW = img.width * finalScale;
             const imgH = img.height * finalScale;
-
             const dx = centerX - imgW / 2 + (t.x * ratio);
             const dy = centerY - imgH / 2 + (t.y * ratio);
 
             ctx.drawImage(img, dx, dy, imgW, imgH);
 
-            // 3. Download with improved naming and 300 DPI Metadata
+            // 3. Download with improved naming
             const link = document.createElement('a');
             const sanitizedName = order.name.replace(/[^a-zA-Z0-9_-]/g, '_').toUpperCase();
-            link.download = "ORDER_" + sanitizedName + "_QTY" + order.quantity + "_SIZE" + sizeConfig.outerDiameterCm + "CM.png";
 
-            // Create Blob with 300 DPI metadata
+            // FILENAME FORMAT: [TYPE]_[NAME]_QTY[N]_SIZE[N]CM.png
+            link.download = productType + "_" + sanitizedName + "_QTY" + order.quantity + "_SIZE" + sizeConfig.outerDiameterCm + "CM.png";
+
             const blob = setDPI(canvas, 300);
-
             link.href = URL.createObjectURL(blob);
             link.click();
-
-            // Cleanup
             setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-
-            // OPTIONAL: Automatically mark as processed after download?
-            // User requirement: "tambahkan button sudah di proses... ketika di klik... akan masuk ke menu report"
-            // So we should probably ask or just mark it.
-            // Let's add a separate button or combining it?
-            // "ketika di klik button sudah di proses maka akan masuk ke menu report"
-            // Suggestion: Two buttons. "Download Logic" and "Mark Done".
         };
     };
 
@@ -147,11 +143,13 @@ const Admin = () => {
 
     return (
         <div className="space-y-8 animate-fade-in">
+            {/* Header Section (Unchanged) ... */}
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">Dashboard Admin</h1>
                     <p className="text-gray-500">Kelola antrian pesanan secara real-time.</p>
                 </div>
+                {/* ... Buttons ... */}
                 <div className="flex gap-4 items-center">
                     <Link
                         to="/report"
@@ -222,14 +220,15 @@ const Admin = () => {
                             <div className="flex-grow space-y-1">
                                 <div className="flex items-center gap-2">
                                     <h3 className="font-bold text-lg text-gray-900">{order.name}</h3>
-                                    <span className="px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700 border border-green-200">
-                                        {order.status === 'pending' ? 'Menunggu Proses' : order.status}
+                                    {/* Product Type Badge */}
+                                    <span className={`px-2 py-0.5 rounded text-xs font-bold border ${order.productType === 'keychain' ? 'bg-purple-100 text-purple-700 border-purple-200' : 'bg-blue-100 text-blue-700 border-blue-200'}`}>
+                                        {order.productType === 'keychain' ? 'GANTUNGAN KUNCI' : 'PIN PENITI'}
                                     </span>
                                 </div>
                                 <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                                     <span className="flex items-center gap-1">
                                         <Package size={14} />
-                                        {order.sizeDetails.label} ({order.quantity} pcs)
+                                        {order.sizeDetails?.label || 'Unknown Size'} ({order.quantity} pcs)
                                     </span>
                                     <span className="flex items-center gap-1">
                                         <Clock size={14} />
@@ -293,6 +292,9 @@ const Admin = () => {
                                     <h3 className="text-lg font-bold text-gray-900">{selectedOrder.name}</h3>
                                     <p className="text-gray-500 text-sm">ID: {selectedOrder.id}</p>
                                     <div className="flex gap-2 mt-2">
+                                        <span className={`px-2 py-0.5 rounded text-xs font-bold border ${selectedOrder.productType === 'keychain' ? 'bg-purple-100 text-purple-700 border-purple-200' : 'bg-blue-100 text-blue-700 border-blue-200'}`}>
+                                            {selectedOrder.productType === 'keychain' ? 'GANTUNGAN KUNCI' : 'PIN PENITI'}
+                                        </span>
                                         <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded font-medium border border-green-200">
                                             {selectedOrder.status}
                                         </span>
@@ -309,13 +311,13 @@ const Admin = () => {
                                     <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 uppercase mb-1">
                                         <Package size={14} /> Ukuran
                                     </div>
-                                    <p className="font-medium text-gray-900">{selectedOrder.sizeDetails.label}</p>
+                                    <p className="font-medium text-gray-900">{selectedOrder.sizeDetails?.label || '-'}</p>
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 uppercase mb-1">
                                         <Ruler size={14} /> Diameter
                                     </div>
-                                    <p className="font-medium text-gray-900">{selectedOrder.sizeDetails.outerDiameterCm} cm</p>
+                                    <p className="font-medium text-gray-900">{selectedOrder.sizeDetails?.outerDiameterCm || 0} cm</p>
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 uppercase mb-1">
@@ -328,7 +330,7 @@ const Admin = () => {
                                         <User size={14} /> Total
                                     </div>
                                     <p className="font-medium text-gray-900">
-                                        Rp {(selectedOrder.quantity * selectedOrder.sizeDetails.price).toLocaleString()}
+                                        Rp {(selectedOrder.quantity * (selectedOrder.sizeDetails?.price || 0)).toLocaleString()}
                                     </p>
                                 </div>
                             </div>

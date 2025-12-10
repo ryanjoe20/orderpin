@@ -11,9 +11,16 @@ export const OrderProvider = ({ children }) => {
         const savedOrders = localStorage.getItem('pin_orders');
         if (savedOrders) {
             try {
-                setOrders(JSON.parse(savedOrders));
+                const parsed = JSON.parse(savedOrders);
+                if (Array.isArray(parsed)) {
+                    setOrders(parsed);
+                } else {
+                    console.error("Orders is not an array, resetting.");
+                    setOrders([]);
+                }
             } catch (e) {
                 console.error("Failed to parse orders:", e);
+                setOrders([]);
             }
         }
         setIsLoaded(true);

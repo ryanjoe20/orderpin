@@ -18,11 +18,13 @@ const Report = () => {
         const data = completedOrders.map(order => {
             const date = new Date(order.timestamp).toLocaleString('id-ID');
             const sanitizedName = order.name.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase();
-            const fileName = "ORDER_" + sanitizedName + "_QTY" + order.quantity + ".png";
+            const productType = order.productType === 'keychain' ? 'GANCI' : 'PIN';
+            const fileName = productType + "_ORDER_" + sanitizedName + "_QTY" + order.quantity + ".png";
 
             return {
                 "ID Pesanan": order.id,
                 "Tanggal Order": date,
+                "Jenis Produk": order.productType === 'keychain' ? 'Gantungan Kunci' : 'Pin Peniti',
                 "Nama Pemesan": order.name,
                 "Ukuran Pin": order.sizeDetails.label,
                 "Diameter (cm)": order.sizeDetails.outerDiameterCm,
@@ -40,6 +42,7 @@ const Report = () => {
         const wscols = [
             { wch: 10 }, // ID (short)
             { wch: 20 }, // Date
+            { wch: 15 }, // Jenis Produk
             { wch: 20 }, // Name
             { wch: 15 }, // Size Label
             { wch: 12 }, // Diameter
@@ -121,6 +124,7 @@ const Report = () => {
                         <thead className="bg-gray-50 text-gray-600 border-b border-gray-200 uppercase tracking-wider text-xs">
                             <tr>
                                 <th className="px-6 py-4 font-semibold">Tanggal</th>
+                                <th className="px-6 py-4 font-semibold">Jenis</th>
                                 <th className="px-6 py-4 font-semibold">Nama</th>
                                 <th className="px-6 py-4 font-semibold">Detail Ukuran</th>
                                 <th className="px-6 py-4 font-semibold text-center">Qty</th>
@@ -131,7 +135,7 @@ const Report = () => {
                         <tbody className="divide-y divide-gray-100">
                             {completedOrders.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="px-6 py-12 text-center text-gray-400">
+                                    <td colSpan="7" className="px-6 py-12 text-center text-gray-400">
                                         Belum ada data laporan.
                                     </td>
                                 </tr>
@@ -142,19 +146,25 @@ const Report = () => {
                                             {new Date(order.timestamp).toLocaleString('id-ID')}
                                         </td>
                                         <td className="px-6 py-4 font-medium text-gray-900">
+                                            <span className={`px-2 py-0.5 rounded text-xs font-bold border ${order.productType === 'keychain' ? 'bg-purple-100 text-purple-700 border-purple-200' : 'bg-blue-100 text-blue-700 border-blue-200'}`}>
+                                                {order.productType === 'keychain' ? 'Ganci' : 'Pin'}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 font-medium text-gray-900">
                                             {order.name}
                                         </td>
                                         <td className="px-6 py-4 text-gray-600">
-                                            {order.sizeDetails.label} ({order.sizeDetails.outerDiameterCm} cm)
+                                            {order.sizeDetails?.label || '-'} ({order.sizeDetails?.outerDiameterCm || '?'} cm)
                                         </td>
                                         <td className="px-6 py-4 text-center text-gray-900">
                                             {order.quantity}
                                         </td>
                                         <td className="px-6 py-4 text-right font-medium text-gray-900">
-                                            Rp {(order.quantity * order.sizeDetails.price).toLocaleString()}
+                                            Rp {(order.quantity * (order.sizeDetails?.price || 0)).toLocaleString()}
                                         </td>
                                         <td className="px-6 py-4 text-gray-500 font-mono text-xs w-48 truncate max-w-xs">
-                                            {"ORDER_" + order.name.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase() + "_QTY" + order.quantity + "..."}
+                                            {/* Replicate logic for display name since keys are confusing here */}
+                                            {(order.productType === 'keychain' ? 'GANCI' : 'PIN') + "_ORDER_..."}
                                         </td>
                                     </tr>
                                 ))
