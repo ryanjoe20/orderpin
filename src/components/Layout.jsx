@@ -19,7 +19,7 @@ const Layout = ({ children }) => {
 
                         <div className="flex flex-col leading-tight">
                             <span className="font-bold text-xl tracking-tight text-gray-900">
-                                Tefa IT Clinic
+                                TEFA IT Clinic
                             </span>
                             <span className="text-sm text-gray-600 -mt-1">
                                 SMK Pratama Mulya Karawang

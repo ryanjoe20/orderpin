@@ -112,7 +112,7 @@ const Home = () => {
                 {/* Left Column: Form */}
                 <div className="bg-white/70 backdrop-blur-xl p-8 rounded-3xl shadow-2xl border border-white/20">
                     <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 mb-2">
-                        Buat Pin Custom
+                        Buat Pin & Ganci Custom
                     </h1>
                     <p className="text-gray-500 mb-8">
                         Desain pin berkualitas tinggi dengan mudah. Upload, preview, pesan.
