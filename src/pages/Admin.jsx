@@ -6,12 +6,20 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const Admin = () => {
-    const { orders, clearOrders, updateOrderStatus } = useOrders();
+    const { orders, clearOrders, updateOrderStatus, loading } = useOrders();
 
     // Queue: Oldest first, FILTER OUT completed orders
     const sortedOrders = [...orders]
         .filter(o => o.status !== 'completed')
         .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+    if (loading) {
+        return (
+            <div className="flex h-[50vh] items-center justify-center">
+                <div className="text-xl font-bold text-gray-500 animate-pulse">Loading orders...</div>
+            </div>
+        );
+    }
 
     const [selectedOrder, setSelectedOrder] = useState(null);
 
@@ -158,6 +166,22 @@ const Admin = () => {
                         <FileText size={16} />
                         Laporan
                     </Link>
+                    <div className="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200 flex items-center gap-4">
+                        <div className="text-sm font-medium">
+                            Total Order: {orders.length}
+                        </div>
+                        <div className="h-4 w-px bg-gray-300"></div>
+                        <button
+                            onClick={() => {
+                                if (confirm('Hapus semua data pesanan?')) {
+                                    clearOrders();
+                                }
+                            }}
+                            className="text-xs text-red-500 hover:text-red-700 font-medium"
+                        >
+                            Reset Data
+                        </button>
+                    </div>
                     <button
                         onClick={() => {
                             if (confirm('Yakin ingin keluar?')) {
@@ -165,23 +189,10 @@ const Admin = () => {
                                 window.location.reload();
                             }
                         }}
-                        className="text-xs text-gray-500 hover:text-gray-800 font-medium"
+                        className="px-4 py-2 bg-white border border-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors text-sm"
                     >
-                        Kelluar
+                        Keluar
                     </button>
-                    <button
-                        onClick={() => {
-                            if (confirm('Hapus semua data pesanan?')) {
-                                clearOrders();
-                            }
-                        }}
-                        className="text-xs text-red-500 hover:text-red-700 underline"
-                    >
-                        Reset Data
-                    </button>
-                    <div className="bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200 text-sm font-medium">
-                        Total Order: {orders.length}
-                    </div>
                 </div>
             </div>
 
@@ -220,6 +231,9 @@ const Admin = () => {
                             <div className="flex-grow space-y-1">
                                 <div className="flex items-center gap-2">
                                     <h3 className="font-bold text-lg text-gray-900">{order.name}</h3>
+                                    <span className="text-xs text-gray-500 font-mono bg-gray-100 px-2 py-0.5 rounded">
+                                        {order.phoneNumber || '-'}
+                                    </span>
                                     {/* Product Type Badge */}
                                     <span className={`px-2 py-0.5 rounded text-xs font-bold border ${order.productType === 'keychain' ? 'bg-purple-100 text-purple-700 border-purple-200' : 'bg-blue-100 text-blue-700 border-blue-200'}`}>
                                         {order.productType === 'keychain' ? 'GANTUNGAN KUNCI' : 'PIN PENITI'}
@@ -290,7 +304,8 @@ const Admin = () => {
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-bold text-gray-900">{selectedOrder.name}</h3>
-                                    <p className="text-gray-500 text-sm">ID: {selectedOrder.id}</p>
+                                    <p className="text-gray-500 text-sm">{selectedOrder.phoneNumber || 'No Phone'}</p>
+                                    <p className="text-gray-400 text-xs mt-0.5">ID: {selectedOrder.id}</p>
                                     <div className="flex gap-2 mt-2">
                                         <span className={`px-2 py-0.5 rounded text-xs font-bold border ${selectedOrder.productType === 'keychain' ? 'bg-purple-100 text-purple-700 border-purple-200' : 'bg-blue-100 text-blue-700 border-blue-200'}`}>
                                             {selectedOrder.productType === 'keychain' ? 'GANTUNGAN KUNCI' : 'PIN PENITI'}
