@@ -56,13 +56,23 @@ const Home = () => {
                 img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    // Keep original dimensions - NO RESIZE
-                    canvas.width = img.width;
-                    canvas.height = img.height;
+                    // Max width 2400px (suitable for 300 DPI at 8 inches print)
+                    const MAX_WIDTH = 2400;
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Only resize if image is larger than MAX_WIDTH
+                    if (width > MAX_WIDTH) {
+                        height = (height * MAX_WIDTH) / width;
+                        width = MAX_WIDTH;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
                     const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    // Use PNG format with maximum quality (1.0 = 100%)
-                    resolve(canvas.toDataURL('image/png', 1.0));
+                    ctx.drawImage(img, 0, 0, width, height);
+                    // JPEG with 92% quality - good balance for print quality and file size
+                    resolve(canvas.toDataURL('image/jpeg', 0.92));
                 };
             };
         });
