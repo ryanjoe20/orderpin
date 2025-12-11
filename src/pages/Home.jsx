@@ -56,13 +56,13 @@ const Home = () => {
                 img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 800;
-                    const scaleSize = MAX_WIDTH / Math.max(img.width, MAX_WIDTH);
-                    canvas.width = img.width * scaleSize;
-                    canvas.height = img.height * scaleSize;
+                    // Keep original dimensions - NO RESIZE
+                    canvas.width = img.width;
+                    canvas.height = img.height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    resolve(canvas.toDataURL('image/jpeg', 0.7));
+                    // Use PNG format with maximum quality (1.0 = 100%)
+                    resolve(canvas.toDataURL('image/png', 1.0));
                 };
             };
         });
