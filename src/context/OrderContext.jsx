@@ -7,12 +7,22 @@ export const OrderProvider = ({ children }) => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchOrders = async () => {
+    const fetchOrders = async (statusFilter = 'pending') => {
         try {
-            const { data, error } = await supabase
+            // Optimized: Fetch only specific status to reduce data transfer
+            // Default: pending (for Admin dashboard)
+            // Report page will call with 'completed'
+            let query = supabase
                 .from('orders')
                 .select('*')
                 .order('created_at', { ascending: false });
+
+            // Apply status filter if provided
+            if (statusFilter) {
+                query = query.eq('status', statusFilter);
+            }
+
+            const { data, error } = await query;
 
             if (error) throw error;
 
@@ -43,13 +53,28 @@ export const OrderProvider = ({ children }) => {
     useEffect(() => {
         fetchOrders();
 
-        // Optional: Realtime subscription to auto-update admin dashboard
+        // Listen for both INSERT (new orders) and UPDATE (status changes)
         const channel = supabase
             .channel('orders_channel')
-            .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'orders'
+            }, (payload) => {
+                console.log('🆕 New order inserted:', payload);
                 fetchOrders();
             })
-            .subscribe();
+            .on('postgres_changes', {
+                event: 'UPDATE',
+                schema: 'public',
+                table: 'orders'
+            }, (payload) => {
+                console.log('🔄 Order updated:', payload);
+                fetchOrders();
+            })
+            .subscribe((status) => {
+                console.log('📡 Realtime subscription status:', status);
+            });
 
         return () => {
             supabase.removeChannel(channel);
@@ -102,7 +127,10 @@ export const OrderProvider = ({ children }) => {
                 .eq('id', orderId);
 
             if (error) throw error;
-            // State update handled by realtime or fetch
+
+            // Manual refetch to ensure immediate UI update
+            // (fallback in case realtime subscription is slow or not working)
+            await fetchOrders();
         } catch (error) {
             console.error('Error updating order:', error.message);
             alert("Gagal mengupdate status: " + error.message);

@@ -56,8 +56,8 @@ const Home = () => {
                 img.src = event.target.result;
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
-                    // Max width 2400px (suitable for 300 DPI at 8 inches print)
-                    const MAX_WIDTH = 2400;
+                    // Optimized: 1600px (good for 300 DPI at ~5 inches)
+                    const MAX_WIDTH = 1600;
                     let width = img.width;
                     let height = img.height;
 
@@ -71,8 +71,8 @@ const Home = () => {
                     canvas.height = height;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    // JPEG with 92% quality - good balance for print quality and file size
-                    resolve(canvas.toDataURL('image/jpeg', 0.92));
+                    // Optimized: 85% quality - good balance for file size and quality
+                    resolve(canvas.toDataURL('image/jpeg', 0.85));
                 };
             };
         });
@@ -200,7 +200,12 @@ const Home = () => {
                                     >
                                         <span className="font-bold text-gray-900">{size.label}</span>
                                         <span className="text-xs text-gray-500 mt-1">{size.outerDiameterCm}cm</span>
-                                        <span className="text-sm font-semibold text-indigo-600 mt-2">
+                                        {/* Strikethrough original price */}
+                                        <span className="text-xs text-red-500 line-through mt-1">
+                                            Rp {size.originalPrice.toLocaleString()}
+                                        </span>
+                                        {/* Actual price */}
+                                        <span className="text-sm font-semibold text-indigo-600">
                                             Rp {size.price.toLocaleString()}
                                         </span>
                                     </div>

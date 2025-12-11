@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const SLIDES = [
@@ -6,7 +6,7 @@ const SLIDES = [
         id: 1,
         color: 'bg-indigo-600',
         title: 'Kualitas Premium',
-        desc: 'Pin dengan bahan terbaik dan hasil cetak tajam.',
+        desc: 'Pin & Gantungan kunci dengan bahan terbaik.',
         // placeholder image (gradient)
         bgClass: 'bg-gradient-to-r from-indigo-500 to-purple-600'
     },
@@ -28,12 +28,12 @@ const SLIDES = [
         id: 4,
         color: 'bg-orange-600',
         title: 'Proses Cepat',
-        desc: 'Pengerjaan 1-2 hari kerja untuk pesanan retail.',
+        desc: 'Pengerjaan cepat, kualitas terjamin.',
         bgClass: 'bg-gradient-to-r from-orange-400 to-red-500'
     }
 ];
 
-const PromoCarousel = () => {
+const PromoCarousel = memo(() => {
     const [current, setCurrent] = useState(0);
 
     useEffect(() => {
@@ -92,6 +92,8 @@ const PromoCarousel = () => {
             </div>
         </div>
     );
-};
+});
+
+PromoCarousel.displayName = 'PromoCarousel';
 
 export default PromoCarousel;

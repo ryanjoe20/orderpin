@@ -15,8 +15,33 @@ const Admin = () => {
 
     if (loading) {
         return (
-            <div className="flex h-[50vh] items-center justify-center">
-                <div className="text-xl font-bold text-gray-500 animate-pulse">Loading orders...</div>
+            <div className="space-y-6 animate-pulse">
+                {/* Skeleton Header */}
+                <div className="flex items-center justify-between">
+                    <div>
+                        <div className="h-8 bg-gray-200 rounded w-48 mb-2"></div>
+                        <div className="h-4 bg-gray-200 rounded w-64"></div>
+                    </div>
+                    <div className="flex gap-4">
+                        <div className="h-10 bg-gray-200 rounded w-32"></div>
+                        <div className="h-10 bg-gray-200 rounded w-32"></div>
+                    </div>
+                </div>
+                {/* Skeleton Cards */}
+                {[1, 2, 3].map(i => (
+                    <div key={i} className="bg-white p-6 rounded-xl border border-gray-200 flex gap-4">
+                        <div className="w-24 h-24 bg-gray-200 rounded-lg"></div>
+                        <div className="flex-grow space-y-3">
+                            <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+                            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                            <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                        </div>
+                        <div className="space-y-2">
+                            <div className="h-10 bg-gray-200 rounded w-24"></div>
+                            <div className="h-10 bg-gray-200 rounded w-24"></div>
+                        </div>
+                    </div>
+                ))}
             </div>
         );
     }
@@ -220,7 +245,8 @@ const Admin = () => {
                                     <img
                                         src={order.imageData}
                                         alt="Preview"
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                                        loading="lazy"
+                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform will-change-transform"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-400">No Img</div>
@@ -358,6 +384,7 @@ const Admin = () => {
                                         <img
                                             src={selectedOrder.imageData}
                                             alt="Full Design"
+                                            loading="lazy"
                                             className="w-full h-auto max-h-[400px] object-contain"
                                         />
                                     ) : (
